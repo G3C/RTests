@@ -1,0 +1,111 @@
+string result 
+result = dt.Rows[0]["PatientsNum"].ToString();
+
+
+//http://www.alternativa3d.co.kr/56 
+
+//DataTable에서 컬렴명으로 값 가져오기
+private void GetRows()
+{
+    // Get the DataTable of a DataSet.
+    DataTable table = DataSet1.Tables["테이블명"];
+    DataRow[] rows = table.Select();
+
+    // Print the value one column of each DataRow.
+    for(int i = 0; i < rows.Length ; i++)
+    {
+        Console.WriteLine(rows[i]["가져올 컬럼명"]);
+    }
+}
+
+
+
+//생성, 삭제, 조회, 갱신===========
+//http://durubiz.tistory.com/entry/C-DataTable%EC%97%90%EC%84%9C-Datarow-%ED%95%B8%EB%93%A4%EB%A7%81-Add-select-Update-Delete
+
+
+//저장 ===========================================================
+
+//Repeater 라는 놈에 DataTable데이터를 바인딩해서 출력을 주로 하게 되었다.
+
+근데, 막상 결과를 datatable에 담는 간단한 샘플코드 찾기가 이상하게 힘들었고, 결국은 내가 정리해서 포스팅을 하게 되었다 ;;; 
+
+예제1) 테이블
+ NAME
+ AGE
+ 홍길동
+ 10
+ 둘리
+ 20
+
+이런 테이블 형태의 데이터를 담고 싶다면??
+loop를 돌면서 데이터를 생성해서 담는 구조면 처음것,,,
+api같은것에서 배열을 통째로 던져주는 구조라면 두번재 방법으로 사용하면됨...
+
+
+[첫번째 방법]  값을 일일이 넣어주기 ! (필드단위로 값을 넣어주기)
+    	선언문 : using System.Data;
+
+        DataTable table = new DataTable();
+        DataRow row = null;
+    
+        //[1] 필드정의
+    	table.Columns.Add(new DataColumn("NAME", typeof(string)));
+    	table.Columns.Add(new DataColumn("AGE", typeof(int)));
+
+        //[2] 행추가하기, 데이터 넣기
+    	//----LOOP로직[시작]----
+    	row = table.NewRow();  //행추가
+    	row["NAME"] = "홍길동";
+    	row["AGE"] = 10;
+    	table.Rows.Add(row);
+        //----LOOP로직[끝]----
+
+
+        row = table.NewRow();
+    	row["NAME"] = "둘리";
+    	row["AGE"] = 20;
+    	table.Rows.Add(row);
+    	...
+
+
+
+[두번째방법] 값을 object 배열로 밀어 넣어 버리기 ! (행을 통째로 대입)
+    	선언문 : using System.Data;
+
+        DataTable table = new DataTable();
+        DataRow row = null;
+    
+        //[1] 필드정의
+    	table.Columns.Add(new DataColumn("NAME", typeof(string)));
+    	table.Columns.Add(new DataColumn("AGE", typeof(int)));
+
+        //[2] 행추가하기 , 데이터 넣기
+    	//----LOOP로직[시작]----
+    	row = table.NewRow();
+    	row.ItemArray = new object[]{"홍길동", 10 };
+    	table.Rows.Add(row);
+        //----LOOP로직[끝]----
+
+    	row = table.NewRow();
+    	row.ItemArray = new object[]{"둘리", 20 };
+    	table.Rows.Add(row);
+        ...
+
+
+
+
+이런식으로 선언하고 rpt_view라는 리피터를 선언했다면,
+
+rpt_view.DataSource = table;
+rpt_view.DataBind();
+
+형태로 출력하면 됨.
+
+
+DataTable Select===================================================
+http://haebi.kr/entry/C-%EC%9D%B4%EB%9F%B0-%EC%8B%A4%EC%88%98%EB%A5%BC-%EB%B2%94%ED%95%98%EC%A7%80-%EB%A7%90%EC%9E%90-DataTable 
+
+ Datatable 사용해서 처리하는 구문이 있었는데 의도하지 않은 방향으로 흘러가 버렸네요...
+
+일단 의도는 다음과 같습니다.
